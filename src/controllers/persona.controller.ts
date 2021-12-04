@@ -9,11 +9,11 @@ import {
 } from '@loopback/repository';
 import {
   del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
+  getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
   response
 } from '@loopback/rest';
 import {Llaves} from '../config/llaves';
-import {Persona} from '../models';
+import {Credenciales, Persona} from '../models';
 import {PersonaRepository} from '../repositories';
 import {AutenticacionService} from '../services';
 const fetch = require('node-fetch');
@@ -26,7 +26,34 @@ export class PersonaController {
     public servicioAutenticacion : AutenticacionService
   ) {}
 
-  @post('/personas')
+  @post("/identificarPersonaSA", {
+    responses: {
+      '200': {
+        description: "Identificación de usuarios"
+      }
+    }
+  })
+  async identificarPersona(
+    @requestBody() credenciales: Credenciales
+  ) {
+    let p = await this.servicioAutenticacion.IdentificarPersona(credenciales.usuario, credenciales.clave);
+    if (p) {
+      let token = this.servicioAutenticacion.GenerarTokenJWT(p);
+      return{
+        datos: {
+          nombre: p.nombres,
+          correo: p.correo,
+          id: p.id
+        },
+        tk: token
+      }
+    }
+    else {
+      throw new HttpErrors[401]("Datos inválidos.")
+    }
+  }
+
+  @post('/personasSA')
   @response(200, {
     description: 'Persona model instance',
     content: {'application/json': {schema: getModelSchemaRef(Persona)}},
@@ -53,7 +80,7 @@ export class PersonaController {
     // Después de creado se notifica a la persona a través del servicio creado con python
     let destino = persona.correo;
     let asunto = "Registro en SmartAir";
-    let contenido = `Hola ${persona.nombres},\nTe has registrado en SmartAir\nUsuario: ${persona.correo} y contraseña: ${clave}`;
+    let contenido = `Hola ${persona.nombres}, te has registrado en SmartAir. Usuario: ${persona.correo} y contraseña: ${clave}`;
     fetch(`${Llaves.urlServicioNotificaciones}/envio-correo?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
       .then((data:any) => {
         console.log(data);

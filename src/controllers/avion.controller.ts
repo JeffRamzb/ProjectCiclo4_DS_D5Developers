@@ -1,31 +1,28 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
 import {Avion} from '../models';
 import {AvionRepository} from '../repositories';
 
+@authenticate("admin")
 export class AvionController {
   constructor(
     @repository(AvionRepository)
     public avionRepository : AvionRepository,
   ) {}
 
+  @authenticate.skip()
   @post('/aviones')
   @response(200, {
     description: 'Avion model instance',
@@ -47,6 +44,7 @@ export class AvionController {
     return this.avionRepository.create(avion);
   }
 
+  @authenticate.skip()
   @get('/aviones/count')
   @response(200, {
     description: 'Avion model count',
@@ -58,6 +56,7 @@ export class AvionController {
     return this.avionRepository.count(where);
   }
 
+  @authenticate.skip()
   @get('/aviones')
   @response(200, {
     description: 'Array of Avion model instances',
@@ -95,6 +94,7 @@ export class AvionController {
     return this.avionRepository.updateAll(avion, where);
   }
 
+  @authenticate.skip()
   @get('/aviones/{id}')
   @response(200, {
     description: 'Avion model instance',
@@ -129,6 +129,7 @@ export class AvionController {
     await this.avionRepository.updateById(id, avion);
   }
 
+  @authenticate.skip()
   @put('/aviones/{id}')
   @response(204, {
     description: 'Avion PUT success',

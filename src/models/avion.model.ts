@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Persona} from './persona.model';
 
 @model()
@@ -18,25 +18,25 @@ export class Avion extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false, //true
   })
   descripcion: string;
 
   @property({
     type: 'number',
-    required: true,
+    required: false, //true
   })
   porcentaje_participacion: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: false, //true
   })
   tipo_avion: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: false, //true
   })
   tipo_oferta: number;
 
@@ -54,26 +54,21 @@ export class Avion extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false, //true
   })
   departamento: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: false, //true
   })
   ciudad: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: false, //true
   })
   direccion: string;
-
-  @property({
-    type: 'string',
-  })
-  video?: string;
 
   @property({
     type: 'string',
